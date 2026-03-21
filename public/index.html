@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Stem</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#111110">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<style>
+  :root {
+    --white: #FFFFFF;
+    --off: #F7F6F4;
+    --ink: #111110;
+    --mid: #6B6B67;
+    --faint: #E8E7E3;
+    --faint2: #D4D3CF;
+    --accent: #8B1A2E;
+    --accent-bg: #F5EDEF;
+    --font: 'Inter', -apple-system, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; background: #EBEBEA; font-family: var(--font); font-weight: 400; color: var(--ink); }
+
+  /* ── Phone shell ── */
+  .shell {
+    width: 390px;
+    height: 844px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+  }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  @media (max-height: 880px) { .shell { transform: scale(0.9); transform-origin: center; } }
+  @media (max-height: 780px) { .shell { transform: scale(0.8); } }
+  @media (max-width: 420px) { .shell { width: 100vw; height: 100vh; transform: none; } }
+
+  /* ── Screens ── */
+  .screen {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    transform: translateX(16px);
+    overflow: hidden;
+    background: var(--white);
+  }
+  .screen.active { opacity: 1; pointer-events: all; transform: none; }
+  .screen.out { transform: translateX(-16px); opacity: 0; pointer-events: none; }
+
+  /* ── Status bar ── */
+  .sb {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 20px 0;
+    font-size: 12px; font-weight: 500; letter-spacing: -0.01em;
+    flex-shrink: 0;
+  }
+  .sb-icons { display: flex; gap: 5px; font-size: 11px; }
+
+  /* ── Scroll ── */
+  .scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .scroll::-webkit-scrollbar { display: none; }
+
+  /* ── Nav bar ── */
+  .nav {
+    display: flex; border-top: 1px solid var(--faint);
+    padding: 10px 0 22px; flex-shrink: 0;
+    background: var(--white);
+  }
+  .nav-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 4px; background: none; border: none; cursor: pointer;
+    font-size: 10px; letter-spacing: 0.04em; color: var(--mid);
+    padding: 4px 0; transition: color 0.15s;
+  }
+  .nav-btn.on { color: var(--ink); }
+  .nav-icon { font-size: 18px; line-height: 1; }
+
+  /* ── Type ── */
+  .h1 { font-size: 28px; font-weight: 300; letter-spacing: -0.03em; line-height: 1.1; }
+  .h2 { font-size: 20px; font-weight: 400; letter-spacing: -0.02em; }
+  .label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid); }
+  .body { font-size: 14px; line-height: 1.6; color: var(--mid); font-weight: 300; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: block; width: 100%; padding: 14px 20px;
+    background: var(--ink); color: var(--white);
+    border: none; font-family: var(--font); font-size: 13px;
+    font-weight: 400; letter-spacing: 0.04em; cursor: pointer;
+    transition: opacity 0.15s; border-radius: 2px;
+  }
+  .btn:active { opacity: 0.75; }
+  .btn.ghost {
+    background: none; color: var(--mid);
+    border: 1px solid var(--faint2);
+  }
+  .btn.ghost:hover { border-color: var(--ink); color: var(--ink); }
+  .btn.sm { padding: 10px 16px; font-size: 12px; width: auto; }
+  .btn:disabled { opacity: 0.3; pointer-events: none; }
+
+  /* ── Divider ── */
+  .div { height: 1px; background: var(--faint); }
+
+  /* ── Tag / chip ── */
+  .chip {
+    display: inline-block; padding: 5px 12px;
+    border: 1px solid var(--faint2); border-radius: 100px;
+    font-size: 12px; cursor: pointer; transition: all 0.15s;
+    background: none; color: var(--ink); font-family: var(--font);
+    white-space: nowrap;
+  }
+  .chip.on { background: var(--ink); color: var(--white); border-color: var(--ink); }
+
+  /* ── Back link ── */
+  .back { background: none; border: none; font-size: 13px; color: var(--mid); cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 0; }
+  .back:hover { color: var(--ink); }
+
+  /* ─────────────────────────────────────────
+     SPLASH
+  ───────────────────────────────────────── */
+  #s-splash { background: var(--ink); }
+  #s-splash .sb { color: rgba(255,255,255,0.5); }
+  .splash-body { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 40px 28px 36px; }
+  .splash-wordmark { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 48px; }
+  .splash-h { font-size: 42px; font-weight: 300; letter-spacing: -0.04em; line-height: 1.05; color: #fff; margin-bottom: 20px; }
+  .splash-sub { font-size: 14px; font-weight: 300; line-height: 1.7; color: rgba(255,255,255,0.45); max-width: 300px; margin-bottom: 40px; }
+  .splash-actions { display: flex; flex-direction: column; gap: 10px; }
+  .splash-actions .btn { background: #fff; color: var(--ink); }
+  .splash-actions .btn.ghost { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.45); }
+  .splash-actions .btn.ghost:hover { border-color: rgba(255,255,255,0.5); color: rgba(255,255,255,0.7); }
+
+  /* ─────────────────────────────────────────
+     TASTE SETUP
+  ───────────────────────────────────────── */
+  .taste-head { padding: 20px 24px 24px; }
+  .taste-head .label { margin-bottom: 8px; }
+  .taste-sec { padding: 20px 24px; border-top: 1px solid var(--faint); }
+  .taste-sec .label { margin-bottom: 14px; display: block; }
+  .chips-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+  .slider-wrap { margin-bottom: 18px; }
+  .slider-meta { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .slider-meta span { font-size: 12px; color: var(--mid); }
+  .slider-meta span.hi { color: var(--ink); font-weight: 500; }
+  input[type=range] {
+    width: 100%; -webkit-appearance: none; height: 1px;
+    background: var(--faint2); outline: none; cursor: pointer;
+    border-radius: 1px;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--ink);
+    border: 2px solid var(--white); box-shadow: 0 0 0 1px var(--ink);
+    cursor: pointer;
+  }
+  .taste-foot { padding: 20px 24px; border-top: 1px solid var(--faint); display: flex; gap: 10px; }
+  .taste-foot .btn { flex: 1; }
+
+  /* ─────────────────────────────────────────
+     HOME
+  ───────────────────────────────────────── */
+  .home-head { padding: 20px 24px 22px; display: flex; justify-content: space-between; align-items: flex-start; }
+  .home-greeting { }
+  .home-greeting .label { margin-bottom: 6px; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--faint); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; color: var(--mid); cursor: pointer; flex-shrink: 0; }
+
+  /* Scan card */
+  .scan-card {
+    margin: 0 20px 24px;
+    border: 1px solid var(--faint);
+    border-radius: 4px;
+    padding: 22px 20px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .scan-card:hover { border-color: var(--ink); }
+  .scan-card-label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+  .scan-card-title { font-size: 22px; font-weight: 300; letter-spacing: -0.02em; line-height: 1.15; }
+  .scan-card-arrow { font-size: 20px; color: var(--mid); flex-shrink: 0; margin-left: 12px; }
+
+  /* Insight */
+  .insight {
+    margin: 0 20px 28px;
+    padding: 14px 16px;
+    background: var(--off);
+    border-radius: 4px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .insight-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 6px; }
+  .insight-text { font-size: 13px; line-height: 1.55; color: var(--mid); }
+  .insight-text b { color: var(--ink); font-weight: 500; }
+
+  /* Section row */
+  .sec-row { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; margin-bottom: 14px; }
+  .sec-link { background: none; border: none; font-size: 12px; color: var(--mid); cursor: pointer; }
+  .sec-link:hover { color: var(--ink); }
+
+  /* Recent scroll */
+  .h-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 0 20px 4px; -webkit-overflow-scrolling: touch; }
+  .h-scroll::-webkit-scrollbar { display: none; }
+  .wine-tile { flex-shrink: 0; width: 120px; cursor: pointer; }
+  .wine-tile-img {
+    width: 120px; height: 156px; background: var(--off);
+    border-radius: 3px; margin-bottom: 10px;
+    display: flex; align-items: flex-end; padding: 8px;
+    position: relative; overflow: hidden;
+    border: 1px solid var(--faint);
+  }
+  .wine-tile-img.white-wine { background: #F5F0E4; }
+  .wine-tile-img.rose-wine { background: #F7EEF0; }
+  .wine-bottle {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 18px; opacity: 0.18;
+  }
+  .wine-tile-score { font-size: 11px; font-weight: 500; background: var(--white); padding: 2px 6px; border-radius: 2px; position: relative; }
+  .wine-tile-name { font-size: 13px; font-weight: 400; line-height: 1.25; margin-bottom: 2px; }
+  .wine-tile-meta { font-size: 11px; color: var(--mid); }
+
+  /* ─────────────────────────────────────────
+     SCAN
+  ───────────────────────────────────────── */
+  #s-scan { background: var(--white); }
+  .scan-head { padding: 16px 20px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--faint); }
+
+  .viewfinder {
+    margin: 20px; flex-shrink: 0;
+    border: 1px solid var(--faint); border-radius: 4px;
+    background: var(--off);
+    height: 240px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden; cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .viewfinder:hover { border-color: var(--ink); }
+  .vf-hint { text-align: center; }
+  .vf-hint-icon { width: 32px; height: 32px; margin: 0 auto 10px; opacity: 0.2; }
+  .vf-hint p { font-size: 13px; color: var(--mid); }
+  .vf-preview { display: none; width: 100%; height: 100%; padding: 14px; flex-direction: column; justify-content: center; }
+  .vf-preview.on { display: flex; }
+  .vf-list-item { font-size: 11px; font-family: 'Inter', monospace; color: var(--mid); padding: 3px 0; border-bottom: 1px solid var(--faint); display: flex; justify-content: space-between; }
+  .vf-list-item.header { color: var(--ink); font-weight: 500; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: none; margin-top: 8px; margin-bottom: 2px; }
+  .scan-line {
+    position: absolute; left: 0; right: 0; height: 1px;
+    background: var(--accent); opacity: 0;
+    animation: scan 2s ease-in-out infinite;
+  }
+  .scan-line.on { opacity: 0.6; }
+  @keyframes scan { 0%,100% { top: 15%; } 50% { top: 85%; } }
+
+  .upload-row {
+    margin: 0 20px 16px;
+    border: 1px dashed var(--faint2); border-radius: 3px;
+    padding: 14px 16px;
+    display: flex; gap: 12px; align-items: center;
+    cursor: pointer; transition: border-color 0.15s;
+  }
+  .upload-row:hover { border-color: var(--ink); }
+  .upload-row-text strong { display: block; font-size: 13px; font-weight: 500; margin-bottom: 1px; }
+  .upload-row-text span { font-size: 12px; color: var(--mid); }
+
+  .scan-tips-list { padding: 0 20px; }
+  .scan-tip { display: flex; gap: 14px; padding: 12px 0; border-top: 1px solid var(--faint); }
+  .scan-tip-n { font-size: 11px; color: var(--faint2); font-weight: 500; flex-shrink: 0; margin-top: 2px; }
+  .scan-tip-t { font-size: 13px; color: var(--mid); line-height: 1.5; }
+  .scan-foot { padding: 16px 20px 20px; }
+  #file-in { display: none; }
+
+  /* ─────────────────────────────────────────
+     RESULTS
+  ───────────────────────────────────────── */
+  .results-head { padding: 16px 20px 20px; border-bottom: 1px solid var(--faint); }
+  .results-head-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .filter-row { display: flex; gap: 8px; overflow-x: auto; padding: 12px 20px; border-bottom: 1px solid var(--faint); -webkit-overflow-scrolling: touch; }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-btn {
+    flex-shrink: 0; padding: 6px 14px; border-radius: 100px;
+    border: 1px solid var(--faint2); background: none; font-family: var(--font);
+    font-size: 12px; cursor: pointer; color: var(--mid); transition: all 0.15s;
+  }
+  .filter-btn.on { background: var(--ink); color: var(--white); border-color: var(--ink); }
+
+  .result-item { padding: 18px 20px; border-bottom: 1px solid var(--faint); cursor: pointer; transition: background 0.1s; }
+  .result-item:active { background: var(--off); }
+  .result-top { display: flex; gap: 12px; margin-bottom: 8px; align-items: flex-start; }
+  .result-num { font-size: 11px; font-weight: 500; color: var(--faint2); width: 20px; flex-shrink: 0; margin-top: 3px; }
+  .result-num.top { color: var(--accent); }
+  .result-info { flex: 1; }
+  .result-name { font-size: 16px; font-weight: 400; letter-spacing: -0.01em; margin-bottom: 2px; line-height: 1.2; }
+  .result-producer { font-size: 12px; color: var(--mid); margin-bottom: 8px; }
+  .result-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .result-chip { font-size: 11px; padding: 3px 8px; border: 1px solid var(--faint); border-radius: 100px; color: var(--mid); }
+  .result-chip.match { border-color: rgba(139,26,46,0.25); color: var(--accent); background: var(--accent-bg); }
+  .result-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+  .result-score { font-size: 12px; font-weight: 500; background: var(--ink); color: var(--white); padding: 4px 8px; border-radius: 2px; }
+  .result-score.lo { background: var(--off); color: var(--mid); }
+  .result-price { font-size: 16px; font-weight: 300; letter-spacing: -0.01em; }
+  .result-reason { font-size: 13px; color: var(--mid); line-height: 1.55; padding-left: 32px; margin-bottom: 10px; }
+  .result-reason b { color: var(--ink); font-weight: 500; }
+  .result-actions { display: flex; gap: 8px; padding-left: 32px; }
+  .buy-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--off); border: 1px solid var(--faint2); border-radius: 2px; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: var(--font); color: var(--ink); }
+  .buy-btn:hover { border-color: var(--ink); }
+  .save-btn { padding: 8px 14px; background: none; border: 1px solid var(--faint); border-radius: 2px; font-size: 12px; cursor: pointer; font-family: var(--font); color: var(--mid); transition: all 0.15s; }
+  .save-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .save-btn.saved { border-color: var(--accent); color: var(--accent); }
+
+  /* ─────────────────────────────────────────
+     CELLAR
+  ───────────────────────────────────────── */
+  .cellar-head { padding: 20px 20px 22px; }
+  .cellar-head .label { margin-bottom: 8px; }
+  .cellar-stats { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0 20px 24px; border: 1px solid var(--faint); border-radius: 3px; overflow: hidden; }
+  .c-stat { padding: 14px 12px; text-align: center; }
+  .c-stat + .c-stat { border-left: 1px solid var(--faint); }
+  .c-stat-val { font-size: 26px; font-weight: 300; letter-spacing: -0.03em; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+  .c-stat-label { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid); }
+  .taste-dna { margin: 0 20px 24px; padding: 16px; background: var(--off); border-radius: 3px; }
+  .taste-dna .label { margin-bottom: 14px; }
+  .dna-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+  .dna-bar-label { font-size: 12px; color: var(--mid); width: 72px; flex-shrink: 0; }
+  .dna-bar-track { flex: 1; height: 2px; background: var(--faint2); border-radius: 1px; overflow: hidden; }
+  .dna-bar-fill { height: 100%; background: var(--ink); border-radius: 1px; }
+  .dna-bar-val { font-size: 11px; color: var(--mid); width: 28px; text-align: right; flex-shrink: 0; }
+  .cellar-list-head { padding: 0 20px; margin-bottom: 8px; }
+  .cellar-item { display: flex; gap: 14px; align-items: center; padding: 14px 20px; border-top: 1px solid var(--faint); cursor: pointer; }
+  .cellar-item:active { background: var(--off); }
+  .cellar-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .cellar-dot.red { background: var(--accent); }
+  .cellar-dot.white { background: #C4A84A; }
+  .cellar-dot.rose { background: #D4899A; }
+  .cellar-item-info { flex: 1; }
+  .cellar-item-name { font-size: 14px; font-weight: 400; margin-bottom: 2px; }
+  .cellar-item-meta { font-size: 12px; color: var(--mid); }
+  .cellar-stars { font-size: 12px; color: var(--faint2); letter-spacing: -1px; }
+  .cellar-stars .lit { color: #C4A84A; }
+
+  /* ─────────────────────────────────────────
+     BUY
+  ───────────────────────────────────────── */
+  .buy-head { padding: 16px 20px 18px; border-bottom: 1px solid var(--faint); }
+  .buy-match-bar { margin: 20px 20px 0; padding: 14px 16px; background: var(--off); border-radius: 3px; display: flex; justify-content: space-between; align-items: center; }
+  .buy-match-score { font-size: 24px; font-weight: 300; letter-spacing: -0.03em; }
+  .buy-match-score span { font-size: 13px; color: var(--mid); font-weight: 300; margin-left: 2px; }
+  .buy-match-note { font-size: 12px; color: var(--mid); }
+  .retailers-label { padding: 20px 20px 10px; }
+  .retailer { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-top: 1px solid var(--faint); cursor: pointer; transition: background 0.1s; }
+  .retailer:active { background: var(--off); }
+  .retailer-logo { width: 36px; height: 36px; background: var(--off); border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 9px; letter-spacing: 0.04em; text-align: center; color: var(--mid); flex-shrink: 0; line-height: 1.3; text-transform: uppercase; }
+  .retailer-info { flex: 1; }
+  .retailer-name { font-size: 14px; font-weight: 400; margin-bottom: 2px; display: flex; align-items: center; gap: 8px; }
+  .best-badge { font-size: 10px; padding: 2px 6px; background: var(--off); border: 1px solid var(--faint2); border-radius: 2px; color: var(--mid); }
+  .retailer-meta { font-size: 12px; color: var(--mid); }
+  .retailer-price { font-size: 18px; font-weight: 300; letter-spacing: -0.02em; flex-shrink: 0; }
+  .aff-note { margin: 16px 20px; padding: 12px 14px; border: 1px solid var(--faint); border-radius: 3px; font-size: 12px; color: var(--mid); line-height: 1.55; }
+
+  /* ─────────────────────────────────────────
+     LOADING
+  ───────────────────────────────────────── */
+  .loading {
+    position: absolute; inset: 0; background: var(--white);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; z-index: 99;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .loading.on { opacity: 1; pointer-events: all; }
+  .loading-ring { width: 40px; height: 40px; border: 1px solid var(--faint); border-top-color: var(--ink); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-title { font-size: 16px; font-weight: 300; margin-bottom: 6px; }
+  .loading-sub { font-size: 12px; color: var(--mid); margin-bottom: 28px; }
+  .loading-steps { display: flex; flex-direction: column; gap: 10px; min-width: 220px; }
+  .l-step { display: flex; gap: 12px; align-items: center; font-size: 12px; color: var(--faint2); transition: color 0.3s; }
+  .l-step.done { color: var(--ink); }
+  .l-step-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--faint2); flex-shrink: 0; transition: background 0.3s; }
+  .l-step.done .l-step-dot { background: var(--ink); }
+
+  /* Toast */
+  .toast {
+    position: absolute; bottom: 84px; left: 20px; right: 20px;
+    background: var(--ink); color: var(--white); padding: 13px 16px;
+    border-radius: 3px; font-size: 13px; z-index: 200;
+    opacity: 0; transform: translateY(6px); pointer-events: none;
+    transition: all 0.25s; display: flex; align-items: center; gap: 10px;
+  }
+  .toast.on { opacity: 1; transform: none; }
+  .toast-icon { width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="shell" id="app">
+
+  <!-- ═══ SPLASH ═══ -->
+  <div class="screen active" id="s-splash">
+    <div class="sb"><span>9:41</span><div class="sb-icons" style="color:rgba(255,255,255,0.5)"><span>●●●</span><span>▲</span><span>■</span></div></div>
+    <div class="splash-body">
+      <div class="splash-wordmark">Stem</div>
+      <div class="splash-h">Know your<br>wine. Always.</div>
+      <p class="splash-sub">Photograph any wine list. Stem reads your palate and tells you exactly what to order — no guesswork, no bad advice.</p>
+      <div class="splash-actions">
+        <button class="btn" onclick="go('s-taste')">Set up my taste profile</button>
+        <button class="btn ghost" onclick="goHome()">Explore the app first</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TASTE SETUP ═══ -->
+  <div class="screen" id="s-taste">
+    <div class="sb"><span>9:41</span><div class="sb-icons"><span>●●●</span><span>▲</span><span>■</span></div></div>
+    <div class="taste-head">
+      <div class="label">1 / 2 — varieties</div>
+      <div class="h1">Your taste<br>profile.</div>
+    </div>
+    <div class="scroll">
+      <div class="taste-sec">
+        <span class="label">Grapes you love</span>
+        <div class="chips-wrap">
+          <button class="chip on" onclick="toggleChip(this)">Pinot Noir</button>
+          <button class="chip" onclick="toggleChip(this)">Cabernet</button>
+          <button class="chip on" onclick="toggleChip(this)">Burgundy</button>
+          <button class="chip" onclick="toggleChip(this)">Barolo</button>
+          <button class="chip" onclick="toggleChip(this)">Rioja</button>
+          <button class="chip" onclick="toggleChip(this)">Chardonnay</button>
+          <button class="chip" onclick="toggleChip(this)">Riesling</button>
+          <button class="chip on" onclick="toggleChip(this)">Champagne</button>
+          <button class="chip" onclick="toggleChip(this)">Rosé</button>
+          <button class="chip" onclick="toggleChip(this)">Malbec</button>
+          <button class="chip" onclick="toggleChip(this)">Syrah</button>
+        </div>
+      </div>
+      <div class="taste-sec">
+        <span class="label">Flavour sliders</span>
+        <div class="slider-wrap">
+          <div class="slider-meta"><span>Dry</span><span class="hi">Fruit-forward</span><span>Sweet</span></div>
+          <input type="range" min="0" max="100" value="65">
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-meta"><span>Light</span><span class="hi">Medium body</span><span>Full</span></div>
+          <input type="range" min="0" max="100" value="55">
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-meta"><span>Low tannin</span><span class="hi">Tannic</span><span>Grippy</span></div>
+          <input type="range" min="0" max="100" value="70">
+        </div>
+      </div>
+      <div class="taste-sec">
+        <span class="label">Regions</span>
+        <div class="chips-wrap">
+          <button class="chip on" onclick="toggleChip(this)">Burgundy, FR</button>
+          <button class="chip on" onclick="toggleChip(this)">Tuscany, IT</button>
+          <button class="chip" onclick="toggleChip(this)">Bordeaux, FR</button>
+          <button class="chip" onclick="toggleChip(this)">Napa, CA</button>
+          <button class="chip" onclick="toggleChip(this)">Rhône, FR</button>
+          <button class="chip" onclick="toggleChip(this)">Champagne, FR</button>
+          <button class="chip" onclick="toggleChip(this)">Mendoza, AR</button>
+        </div>
+      </div>
+      <div style="height:20px"></div>
+    </div>
+    <div class="taste-foot">
+      <button class="btn ghost sm" onclick="goBack()">← Back</button>
+      <button class="btn" onclick="goHome()">Save profile</button>
+    </div>
+  </div>
+
+  <!-- ═══ HOME ═══ -->
+  <div class="screen" id="s-home">
+    <div class="sb"><span>9:41</span><div class="sb-icons"><span>●●●</span><span>▲</span><span>■</span></div></div>
+    <div class="home-head">
+      <div class="home-greeting">
+        <div class="label">Good evening</div>
+        <div class="h1">Alexandre.</div>
+      </div>
+      <div class="avatar">A</div>
+    </div>
+    <div class="scroll">
+      <div class="scan-card" onclick="go('s-scan')">
+        <div>
+          <div class="scan-card-label">Quick scan</div>
+          <div class="scan-card-title">Photograph<br>a wine list.</div>
+        </div>
+        <div class="scan-card-arrow">→</div>
+      </div>
+
+      <div class="insight">
+        <div class="insight-dot"></div>
+        <div class="insight-text"><b>Trending in your palate:</b> You rate Nebbiolo-based wines 23% higher than your average. Worth exploring Barolo next time.</div>
+      </div>
+
+      <div class="sec-row">
+        <div class="label">Recent</div>
+        <button class="sec-link" onclick="go('s-cellar')">All →</button>
+      </div>
+      <div class="h-scroll">
+        <div class="wine-tile">
+          <div class="wine-tile-img">
+            <svg class="wine-bottle" viewBox="0 0 20 60" fill="currentColor"><path d="M8 0h4v4c2 1 3 3 3 6v40c0 2-2 4-4 4s-4-2-4-4V10c0-3 1-5 3-6V0z"/></svg>
+            <span class="wine-tile-score">9.2</span>
+          </div>
+          <div class="wine-tile-name">Gevrey-Chambertin</div>
+          <div class="wine-tile-meta">Rousseau · 2019</div>
+        </div>
+        <div class="wine-tile">
+          <div class="wine-tile-img white-wine">
+            <svg class="wine-bottle" viewBox="0 0 20 60" fill="#C4A84A"><path d="M8 0h4v4c2 1 3 3 3 6v40c0 2-2 4-4 4s-4-2-4-4V10c0-3 1-5 3-6V0z"/></svg>
+            <span class="wine-tile-score">8.7</span>
+          </div>
+          <div class="wine-tile-name">Puligny-Montrachet</div>
+          <div class="wine-tile-meta">Leflaive · 2020</div>
+        </div>
+        <div class="wine-tile">
+          <div class="wine-tile-img">
+            <svg class="wine-bottle" viewBox="0 0 20 60" fill="currentColor"><path d="M8 0h4v4c2 1 3 3 3 6v40c0 2-2 4-4 4s-4-2-4-4V10c0-3 1-5 3-6V0z"/></svg>
+            <span class="wine-tile-score">8.4</span>
+          </div>
+          <div class="wine-tile-name">Barolo DOCG</div>
+          <div class="wine-tile-meta">Conterno · 2018</div>
+        </div>
+        <div class="wine-tile">
+          <div class="wine-tile-img rose-wine">
+            <svg class="wine-bottle" viewBox="0 0 20 60" fill="#D4899A"><path d="M8 0h4v4c2 1 3 3 3 6v40c0 2-2 4-4 4s-4-2-4-4V10c0-3 1-5 3-6V0z"/></svg>
+            <span class="wine-tile-score">8.1</span>
+          </div>
+          <div class="wine-tile-name">Provence Rosé</div>
+          <div class="wine-tile-meta">Ott · 2022</div>
+        </div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn on" onclick="go('s-home')"><span class="nav-icon">⌂</span>Home</button>
+      <button class="nav-btn" onclick="go('s-scan')"><span class="nav-icon">◎</span>Scan</button>
+      <button class="nav-btn" onclick="go('s-cellar')"><span class="nav-icon">▣</span>Cellar</button>
+      <button class="nav-btn" onclick="toast('Profile settings coming soon')"><span class="nav-icon">◈</span>Profile</button>
+    </div>
+  </div>
+
+  <!-- ═══ SCAN ═══ -->
+  <div class="screen" id="s-scan">
+    <div class="sb"><span>9:41</span><div class="sb-icons"><span>●●●</span><span>▲</span><span>■</span></div></div>
+    <div class="scan-head">
+      <button class="back" onclick="go('s-home')">← Back</button>
+      <div class="label">Scan wine list</div>
+      <div style="width:48px"></div>
+    </div>
+
+    <div class="viewfinder" onclick="triggerPicker()" id="vf">
+      <div class="scan-line" id="scan-line"></div>
+      <div class="vf-hint" id="vf-hint">
+        <svg class="vf-hint-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="8" width="24" height="18" rx="2"/><path d="M11 8V6a5 5 0 0110 0v2"/><circle cx="16" cy="17" r="4"/></svg>
+        <p>Tap to upload a photo of a wine list</p>
+      </div>
+      <div class="vf-preview" id="vf-preview"></div>
+    </div>
+    <input type="file" id="file-in" accept="image/*" onchange="handleUpload(event)">
+
+    <div class="upload-row" onclick="triggerPicker()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" style="flex-shrink:0;opacity:0.4"><path d="M8 10V2M5 5l3-3 3 3M3 12v1a1 1 0 001 1h8a1 1 0 001-1v-1"/></svg>
+      <div class="upload-row-text"><strong>Upload from camera roll</strong><span>Or take a photo directly</span></div>
+    </div>
+
+    <div class="scan-tips-list">
+      <div class="scan-tip"><div class="scan-tip-n">01</div><div class="scan-tip-t">Make sure the full wine list is visible in the frame</div></div>
+      <div class="scan-tip"><div class="scan-tip-n">02</div><div class="scan-tip-t">Good lighting — avoid shadows over the menu text</div></div>
+      <div class="scan-tip"><div class="scan-tip-n">03</div><div class="scan-tip-t">Your taste profile is matched automatically</div></div>
+    </div>
+
+    <div class="scan-foot">
+      <button class="btn" id="analyse-btn" onclick="startAnalysis()" disabled>Analyse list</button>
+    </div>
+    <div class="nav">
+      <button class="nav-btn" onclick="go('s-home')"><span class="nav-icon">⌂</span>Home</button>
+      <button class="nav-btn on" onclick="go('s-scan')"><span class="nav-icon">◎</span>Scan</button>
+      <button class="nav-btn" onclick="go('s-cellar')"><span class="nav-icon">▣</span>Cellar</button>
+      <button class="nav-btn" onclick="toast('Profile settings coming soon')"><span class="nav-icon">◈</span>Profile</button>
+    </div>
+  </div>
+
+  <!-- ═══ RESULTS ═══ -->
+  <div class="screen" id="s-results">
+    <div class="sb"><span>9:41</span><div class="sb-icons"><span>●●●</span><span>▲</span><span>■</span></div></div>
+    <div class="results-head">
+      <div class="results-head-row">
+        <div class="h2">Your picks</div>
+        <div class="label" id="r-count">8 wines analysed</div>
+      </div>
+      <div class="body" style="margin-top:4px" id="r-meta">Matched to your Pinot Noir / Burgundy profile</div>
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn on" onclick="filterR(this,'all')">All</button>
+      <button class="filter-btn" onclick="filterR(this,'red')">Red</button>
+      <button class="filter-btn" onclick="filterR(this,'white')">White</button>
+      <button class="filter-btn" onclick="filterR(this,'value')">Best value</button>
+    </div>
+    <div class="scroll" id="results-list"></div>
+    <div class="nav">
+      <button class="nav-btn" onclick="go('s-home')"><span class="nav-icon">⌂</span>Home</button>
+      <button class="nav-btn on" onclick="go('s-scan')"><span class="nav-icon">◎</span>Scan</button>
+      <button class="nav-btn" onclick="go('s-cellar')"><span class="nav-icon">▣</span>Cellar</button>
+      <button class="nav-btn" onclick="toast('Profile coming soon')"><span class="nav-icon">◈</span>Profile</button>
+    </div>
+  </div>
+
+  <!-- ═══ CELLAR ═══ -->
+  <div class="screen" id="s-cellar">
+    <div class="sb"><span>9:41</span><div class="sb-icons"><span>●●●</span><span>▲</span><span>■</span></div></div>
+    <div class="cellar-head">
+      <div class="label">My collection</div>
+      <div class="h1">Wine cellar.</div>
+    </div>
+    <div class="scroll">
+      <div class="cellar-stats">
+        <div class="c-stat"><div class="c-stat-val">47</div><div class="c-stat-label">Tasted</div></div>
+        <div class="c-stat"><div class="c-stat-val">8.4</div><div class="c-stat-label">Avg score</div></div>
+        <div class="c-stat"><div class="c-stat-val">12</div><div class="c-stat-label">Saved</div></div>
+      </div>
+      <div class="taste-dna">
+        <div class="label">Taste DNA</div>
+        <div class="dna-bar"><div class="dna-bar-label">Pinot Noir</div><div class="dna-bar-track"><div class="dna-bar-fill" style="width:88%"></div></div><div class="dna-bar-val">88%</div></div>
+        <div class="dna-bar"><div class="dna-bar-label">Burgundy</div><div class="dna-bar-track"><div class="dna-bar-fill" style="width:82%"></div></div><div class="dna-bar-val">82%</div></div>
+        <div class="dna-bar"><div class="dna-bar-label">Nebbiolo</div><div class="dna-bar-track"><div class="dna-bar-fill" style="width:75%"></div></div><div class="dna-bar-val">75%</div></div>
+        <div class="dna-bar"><div class="dna-bar-label">Old World</div><div class="dna-bar-track"><div class="dna-bar-fill" style="width:71%"></div></div><div class="dna-bar-val">71%</div></div>
+        <div class="dna-bar" style="margin-bottom:0"><div class="dna-bar-label">Tannic</div><div class="dna-bar-track"><div class="dna-bar-fill" style="width:65%"></div></div><div class="dna-bar-val">65%</div></div>
+      </div>
+      <div class="cellar-list-head"><div class="label">Recently tasted</div></div>
+      <div class="cellar-item"><div class="cellar-dot red"></div><div class="cellar-item-info"><div class="cellar-item-name">Gevrey-Chambertin Premier Cru</div><div class="cellar-item-meta">Rousseau · 2019 · Cazetières</div></div><div class="cellar-stars"><span class="lit">★★★★★</span></div></div>
+      <div class="cellar-item"><div class="cellar-dot white"></div><div class="cellar-item-info"><div class="cellar-item-name">Puligny-Montrachet 1er Cru</div><div class="cellar-item-meta">Leflaive · 2020 · Les Folatières</div></div><div class="cellar-stars"><span class="lit">★★★★</span>☆</div></div>
+      <div class="cellar-item"><div class="cellar-dot red"></div><div class="cellar-item-info"><div class="cellar-item-name">Barolo DOCG</div><div class="cellar-item-meta">Giacomo Conterno · 2018</div></div><div class="cellar-stars"><span class="lit">★★★★</span>☆</div></div>
+      <div class="cellar-item"><div class="cellar-dot rose"></div><div class="cellar-item-info"><div class="cellar-item-name">Château de Selle Rosé</div><div class="cellar-item-meta">Domaines Ott · 2022 · Provence</div></div><div class="cellar-stars"><span class="lit">★★★★</span>☆</div></div>
+      <div class="cellar-item"><div class="cellar-dot red"></div><div class="cellar-item-info"><div class="cellar-item-name">Chambolle-Musigny</div><div class="cellar-item-meta">Mugnier · 2017 · Village</div></div><div class="cellar-stars"><span class="lit">★★★★★</span></div></div>
+      <div style="height:16px"></div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn" onclick="go('s-home')"><span class="nav-icon">⌂</span>Home</button>
+      <button class="nav-btn" onclick="go('s-scan')"><span class="nav-icon">◎</span>Scan</button>
+      <button class="nav-btn on" onclick="go('s-cellar')"><span class="nav-icon">▣</span>Cellar</button>
+      <button class="nav-btn" onclick="toast('Profile coming soon')"><span class="nav-icon">◈</span>Profile</button>
+    </div>
+  </div>
+
+  <!-- ═══ BUY ═══ -->
+  <div class="screen" id="s-buy">
+    <div class="sb"><span>9:41</span><div class="sb-icons"><span>●●●</span><span>▲</span><span>■</span></div></div>
+    <div class="buy-head">
+      <button class="back" onclick="goBack()" style="margin-bottom:12px">← Back</button>
+      <div class="h2" id="buy-name">Gevrey-Chambertin</div>
+      <div class="body" id="buy-meta" style="margin-top:3px">Rossignol-Trapet · 2019 · Burgundy</div>
+    </div>
+    <div class="scroll">
+      <div class="buy-match-bar">
+        <div>
+          <div class="label" style="margin-bottom:4px">Palate match</div>
+          <div class="buy-match-score">97<span>%</span></div>
+        </div>
+        <div class="buy-match-note" style="text-align:right;max-width:140px">Earthy, elegant,<br>long finish</div>
+      </div>
+      <div class="retailers-label"><div class="label">Where to buy</div></div>
+      <div class="retailer" onclick="toast('Opening Vivino — affiliate link')">
+        <div class="retailer-logo">Vivino</div>
+        <div class="retailer-info">
+          <div class="retailer-name">Vivino <span class="best-badge">Best price</span></div>
+          <div class="retailer-meta">3 sellers · Ships to Switzerland</div>
+        </div>
+        <div class="retailer-price">€68</div>
+      </div>
+      <div class="retailer" onclick="toast('Opening Millesima — affiliate link')">
+        <div class="retailer-logo">Millesima</div>
+        <div class="retailer-info">
+          <div class="retailer-name">Millesima</div>
+          <div class="retailer-meta">2 vintages · Fine wine specialist</div>
+        </div>
+        <div class="retailer-price">€74</div>
+      </div>
+      <div class="retailer" onclick="toast('Opening Wine.com — affiliate link')">
+        <div class="retailer-logo">Wine<br>.com</div>
+        <div class="retailer-info">
+          <div class="retailer-name">Wine.com</div>
+          <div class="retailer-meta">International shipping</div>
+        </div>
+        <div class="retailer-price">€79</div>
+      </div>
+      <div class="retailer" onclick="toast('Opening Decanter — affiliate link')">
+        <div class="retailer-logo">Decanter</div>
+        <div class="retailer-info">
+          <div class="retailer-name">Decanter Wine</div>
+          <div class="retailer-meta">Curated fine wine · UK</div>
+        </div>
+        <div class="retailer-price">€82</div>
+      </div>
+      <div class="aff-note">Stem earns a small commission from purchases through our partners. This has no effect on our recommendations — match scores are based solely on your taste profile.</div>
+      <div style="height:20px"></div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <div class="loading-ring"></div>
+    <div class="loading-title">Analysing list</div>
+    <div class="loading-sub">Matching to your palate</div>
+    <div class="loading-steps">
+      <div class="l-step" id="ls1"><div class="l-step-dot"></div>Reading wines from photo</div>
+      <div class="l-step" id="ls2"><div class="l-step-dot"></div>Identifying producers & vintages</div>
+      <div class="l-step" id="ls3"><div class="l-step-dot"></div>Matching against your profile</div>
+      <div class="l-step" id="ls4"><div class="l-step-dot"></div>Ranking recommendations</div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast-el">
+    <div class="toast-icon">✓</div>
+    <span id="toast-txt">Saved</span>
+  </div>
+</div>
+
+<script>
+const RESULTS = [
+  { rank:1, name:"Gevrey-Chambertin Premier Cru", producer:"Rossignol-Trapet", year:"2019", region:"Burgundy, FR", type:"red", score:97, price:"€94", tags:["Pinot Noir","Old World","Earthy"], matchTags:["Pinot Noir","Burgundy"], reason:"Your top pick. <b>Rossignol-Trapet's earthy, elegant style</b> closely matches your Burgundy preference and love of tannic, fruit-forward reds." },
+  { rank:2, name:"Barolo Cascina Francia", producer:"Giacomo Conterno", year:"2018", region:"Piedmont, IT", type:"red", score:91, price:"€130", tags:["Nebbiolo","Tannic","Old World"], matchTags:["Nebbiolo","Tannic"], reason:"Your <b>rising Nebbiolo trend</b> makes this compelling. Long-aged, grippy tannins align with your recent ratings. The splurge worth making." },
+  { rank:3, name:"Chambolle-Musigny", producer:"Mugnier", year:"2020", region:"Burgundy, FR", type:"red", score:88, price:"€78", tags:["Pinot Noir","Silky","Elegant"], matchTags:["Burgundy"], reason:"A lighter, more silky Burgundy — good if you want <b>less intensity</b> tonight. Mugnier's hallmark precision." },
+  { rank:4, name:"Meursault Genevrières", producer:"Comtes Lafon", year:"2019", region:"Burgundy, FR", type:"white", score:84, price:"€62", tags:["Chardonnay","Mineral","White Burg"], matchTags:["Burgundy"], reason:"Best white on the list. <b>Rich, textured Chardonnay</b> with mineral depth. Your profile suggests you enjoy this style." },
+  { rank:5, name:"Rioja Gran Reserva", producer:"López de Heredia", year:"2010", region:"Rioja, ES", type:"red", score:79, price:"€45", tags:["Tempranillo","Old World","Value"], matchTags:[], reason:"Strong value pick. <b>Mature, savoury, complex</b> at a fair price — a sensible choice if the Burgs feel steep." },
+];
+
+// ── Config ─────────────────────────────────────────────────
+// In production this points to your Railway/Render URL.
+// During local dev, run the backend on :3000 and this file on the same server.
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3000'
+  : ''; // same origin when deployed
+
+// ── State ──────────────────────────────────────────────────
+let prev = 's-home', cur = 's-splash', saved = new Set();
+let uploadedImageB64 = null, uploadedMediaType = null;
+
+// ── Persistence ────────────────────────────────────────────
+function saveProfile() {
+  const grapes = [...document.querySelectorAll('.chips-wrap .chip.on')].map(c => c.textContent.trim());
+  const sliders = [...document.querySelectorAll('input[type=range]')].map(s => parseInt(s.value));
+  localStorage.setItem('stem_profile', JSON.stringify({ grapes, sliders }));
+}
+
+function loadProfile() {
+  try {
+    const p = JSON.parse(localStorage.getItem('stem_profile'));
+    if (!p) return;
+    // Restore chips
+    document.querySelectorAll('.chips-wrap .chip').forEach(chip => {
+      chip.classList.toggle('on', p.grapes.includes(chip.textContent.trim()));
+    });
+    // Restore sliders
+    document.querySelectorAll('input[type=range]').forEach((s, i) => {
+      if (p.sliders[i] != null) s.value = p.sliders[i];
+    });
+  } catch {}
+}
+
+function getTasteProfile() {
+  const grapes = [...document.querySelectorAll('.chips-wrap .chip.on')].map(c => c.textContent.trim());
+  const sliders = [...document.querySelectorAll('input[type=range]')].map(s => parseInt(s.value));
+  return { grapes, body: sliders[1] ?? 55, sweetness: sliders[0] ?? 65, tannin: sliders[2] ?? 70 };
+}
+
+function saveCellar() {
+  localStorage.setItem('stem_saved', JSON.stringify([...saved]));
+}
+
+function loadCellar() {
+  try {
+    const s = JSON.parse(localStorage.getItem('stem_saved'));
+    if (Array.isArray(s)) saved = new Set(s);
+  } catch {}
+}
+
+// ── Navigation ─────────────────────────────────────────────
+function go(id) {
+  const c = document.querySelector('.screen.active');
+  if (c) { prev = c.id; c.classList.remove('active'); c.classList.add('out'); setTimeout(() => c.classList.remove('out'), 300); }
+  const n = document.getElementById(id);
+  if (n) { n.classList.add('active'); cur = id; }
+}
+function goBack() { go(prev); }
+function goHome() { saveProfile(); renderResults(RESULTS); go('s-home'); toast('Taste profile saved'); }
+function toggleChip(el) { el.classList.toggle('on'); }
+function triggerPicker() { document.getElementById('file-in').click(); }
+
+// ── Upload ─────────────────────────────────────────────────
+function handleUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  uploadedMediaType = file.type || 'image/jpeg';
+  const reader = new FileReader();
+  reader.onload = ev => {
+    uploadedImageB64 = ev.target.result.split(',')[1];
+    const preview = document.getElementById('vf-preview');
+    preview.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:3px;">`;
+    document.getElementById('vf-hint').style.display = 'none';
+    preview.classList.add('on');
+    document.getElementById('scan-line').classList.add('on');
+    document.getElementById('analyse-btn').disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── Analysis — calls our backend proxy ─────────────────────
+async function startAnalysis() {
+  const L = document.getElementById('loading');
+  L.classList.add('on');
+  ['ls1','ls2','ls3','ls4'].forEach(id => document.getElementById(id).classList.remove('done'));
+
+  document.getElementById('ls1').classList.add('done');
+  await delay(500);
+  document.getElementById('ls2').classList.add('done');
+
+  try {
+    const profile = getTasteProfile();
+
+    const response = await fetch(`${API_BASE}/api/analyse`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        imageBase64: uploadedImageB64,
+        mediaType: uploadedMediaType,
+        tasteProfile: profile,
+      })
+    });
+
+    document.getElementById('ls3').classList.add('done');
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Server error');
+    }
+
+    const results = data.results;
+    document.getElementById('ls4').classList.add('done');
+    await delay(300);
+
+    L.classList.remove('on');
+    renderResults(results);
+    document.getElementById('r-count').textContent = `${results.length} wines analysed`;
+    document.getElementById('r-meta').textContent = `Matched to: ${profile.grapes.slice(0,3).join(', ') || 'your profile'}`;
+    go('s-results');
+
+  } catch (err) {
+    L.classList.remove('on');
+    toast(err.message || 'Could not analyse — try a clearer photo');
+    console.error(err);
+  }
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function renderResults(data) {
+  document.getElementById('results-list').innerHTML = data.map((r,i) => `
+    <div class="result-item" data-type="${r.type}" data-price="${parseInt(r.price.replace(/\D/g,''))}" data-i="${i}">
+      <div class="result-top">
+        <div class="result-num ${r.rank===1?'top':''}">0${r.rank}</div>
+        <div class="result-info">
+          <div class="result-name">${r.name}</div>
+          <div class="result-producer">${r.producer} · ${r.year} · ${r.region}</div>
+          <div class="result-chips">
+            ${r.tags.map(t=>`<span class="result-chip ${r.matchTags.includes(t)?'match':''}">${t}</span>`).join('')}
+          </div>
+        </div>
+        <div class="result-right">
+          <div class="result-score ${r.score<85?'lo':''}">${r.score}%</div>
+          <div class="result-price">${r.price}</div>
+        </div>
+      </div>
+      <div class="result-reason">${r.reason}</div>
+      <div class="result-actions">
+        <button class="buy-btn" onclick="openBuy('${r.name}','${r.producer}','${r.year}','${r.region}')">Buy wine →</button>
+        <button class="save-btn ${saved.has(i)?'saved':''}" id="sv-${i}" onclick="saveWine(${i})">${saved.has(i)?'Saved ✓':'Save'}</button>
+      </div>
+    </div>`).join('');
+}
+
+function filterR(btn, type) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.result-item').forEach(el => {
+    if (type === 'all') el.style.display = '';
+    else if (type === 'red') el.style.display = el.dataset.type === 'red' ? '' : 'none';
+    else if (type === 'white') el.style.display = el.dataset.type === 'white' ? '' : 'none';
+    else if (type === 'value') el.style.display = parseInt(el.dataset.price) < 80 ? '' : 'none';
+  });
+}
+
+function saveWine(i) {
+  if (saved.has(i)) { saved.delete(i); } else { saved.add(i); toast('Added to cellar'); }
+  saveCellar();
+  const btn = document.getElementById('sv-'+i);
+  btn.classList.toggle('saved', saved.has(i));
+  btn.textContent = saved.has(i) ? 'Saved ✓' : 'Save';
+}
+
+function openBuy(name, producer, year, region) {
+  document.getElementById('buy-name').textContent = name;
+  document.getElementById('buy-meta').textContent = `${producer} · ${year} · ${region}`;
+  go('s-buy');
+}
+
+let tTimer;
+function toast(msg) {
+  const el = document.getElementById('toast-el');
+  document.getElementById('toast-txt').textContent = msg;
+  el.classList.add('on');
+  clearTimeout(tTimer);
+  tTimer = setTimeout(() => el.classList.remove('on'), 2600);
+}
+
+// ── Init ───────────────────────────────────────────────────
+loadProfile();
+loadCellar();
+renderResults(RESULTS);
+</script>
+</body>
+</html>

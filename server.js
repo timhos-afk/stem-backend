@@ -41,7 +41,9 @@ app.post('/api/analyse', async (req, res) => {
   }
 
   const profileStr = `
-    Favourite grapes/regions: ${tasteProfile.grapes?.join(', ') || 'not specified'}.
+    Favourite grapes: ${tasteProfile.grapes?.join(', ') || 'not specified'}.
+    How they describe their taste in their own words: ${tasteProfile.descriptors?.join('; ') || 'not specified'}.
+    Specific bottles they have enjoyed: ${tasteProfile.namedBottles?.join('; ') || 'not specified'}.
     Body preference (0=light, 100=full): ${tasteProfile.body ?? 55}.
     Sweetness (0=dry, 100=sweet): ${tasteProfile.sweetness ?? 65}.
     Tannin preference (0=low, 100=grippy): ${tasteProfile.tannin ?? 70}.

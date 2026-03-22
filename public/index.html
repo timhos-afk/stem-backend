@@ -5,11 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Stem</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#111110">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <style>
   :root {
     --white: #FFFFFF;
@@ -118,6 +113,27 @@
   }
   .chip.on { background: var(--ink); color: var(--white); border-color: var(--ink); }
 
+  /* ── Profile category cards ── */
+  .prof-cat { display:flex; justify-content:space-between; align-items:center; padding:14px 20px; border-top:1px solid var(--faint); cursor:pointer; transition:background 0.15s; }
+  .prof-cat:last-child { border-bottom:1px solid var(--faint); }
+  .prof-cat[data-selected="true"] { background:var(--off); }
+  .prof-cat:active { background:var(--off); }
+  .prof-cat-status { font-size:11px; color:var(--mid); }
+  .prof-cat-status.done { color:#3B6D11; font-weight:500; }
+  .prof-desc-card { background:var(--white); border:1px solid var(--faint); border-radius:3px; padding:12px 14px; margin-bottom:8px; cursor:pointer; transition:all 0.15s; }
+  .prof-desc-card.on { background:var(--ink); border-color:var(--ink); }
+  .prof-desc-card.on .pdc-n { color:var(--white); }
+  .prof-desc-card.on .pdc-s { color:rgba(255,255,255,0.4); }
+  .pdc-n { font-size:13px; font-weight:400; color:var(--ink); margin-bottom:2px; }
+  .pdc-s { font-size:11px; color:var(--mid); }
+  .prof-fp-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .prof-fp-row:last-child { margin-bottom:0; }
+  .prof-fp-name { font-size:12px; color:var(--ink); width:120px; flex-shrink:0; line-height:1.3; }
+  .prof-fp-track { flex:1; height:2px; background:var(--faint2); border-radius:1px; overflow:hidden; }
+  .prof-fp-fill { height:100%; background:var(--ink); border-radius:1px; }
+  .prof-fp-conf { font-size:10px; color:var(--mid); width:52px; text-align:right; flex-shrink:0; }
+  .prof-fp-conf.strong { color:var(--ink); font-weight:500; }
+
   /* ── Back link ── */
   .back { background: none; border: none; font-size: 13px; color: var(--mid); cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 0; }
   .back:hover { color: var(--ink); }
@@ -128,14 +144,15 @@
   #s-splash { background: var(--ink); }
   #s-splash .sb { color: rgba(255,255,255,0.5); }
   .splash-body { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 40px 28px 36px; position: relative; }
-  .splash-bottle { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: center; align-items: center; height: 58%; opacity: 1; pointer-events: none; }
-  .splash-bottle svg { height: 100%; }
   .splash-wordmark { font-size: 22px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 20px; position: relative; font-weight: 300; }
-  .splash-h { font-size: 42px; font-weight: 300; letter-spacing: -0.04em; line-height: 1.05; color: #fff; margin-bottom: 20px; position: relative; }
-  .splash-sub { font-size: 14px; font-weight: 300; line-height: 1.7; color: rgba(255,255,255,0.45); max-width: 300px; margin-bottom: 40px; position: relative; }
-  .splash-actions { display: flex; flex-direction: column; gap: 10px; position: relative; }
+  .splash-h { font-size: 42px; font-weight: 300; letter-spacing: -0.04em; line-height: 1.05; color: #fff; margin-bottom: 20px; }
+  .splash-sub { font-size: 14px; font-weight: 300; line-height: 1.7; color: rgba(255,255,255,0.45); max-width: 300px; margin-bottom: 40px; }
+  .splash-actions { display: flex; flex-direction: column; gap: 10px; }
   .splash-actions .btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.25); text-align: left; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; }
   .splash-actions .btn:hover { border-color: rgba(255,255,255,0.6); }
+
+  .splash-bottle { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: center; align-items: center; height: 58%; pointer-events: none; }
+  .splash-bottle svg { height: 100%; width: auto; }
 
   /* ─────────────────────────────────────────
      TASTE SETUP
@@ -404,20 +421,12 @@
     <div class="sb"><span>9:41</span><div class="sb-icons" style="color:rgba(255,255,255,0.5)"><span>●●●</span><span>▲</span><span>■</span></div></div>
     <div class="splash-body">
       <div class="splash-bottle">
-        <svg viewBox="0 0 680 820" xmlns="http://www.w3.org/2000/svg" style="height:100%;width:auto">
+        <svg viewBox="0 0 680 820" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <linearGradient id="sd" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#C8A878" stop-opacity="0"/><stop offset="6%" stop-color="#7A5030" stop-opacity="0.72"/><stop offset="28%" stop-color="#A07848" stop-opacity="0.6"/><stop offset="50%" stop-color="#D4B888" stop-opacity="0.28"/><stop offset="72%" stop-color="#A07848" stop-opacity="0.6"/><stop offset="94%" stop-color="#7A5030" stop-opacity="0.72"/><stop offset="100%" stop-color="#C8A878" stop-opacity="0"/>
-            </linearGradient>
-            <linearGradient id="sm" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#C8A878" stop-opacity="0"/><stop offset="8%" stop-color="#8A6038" stop-opacity="0.55"/><stop offset="35%" stop-color="#B89060" stop-opacity="0.38"/><stop offset="52%" stop-color="#E0C898" stop-opacity="0.18"/><stop offset="74%" stop-color="#B89060" stop-opacity="0.38"/><stop offset="92%" stop-color="#8A6038" stop-opacity="0.55"/><stop offset="100%" stop-color="#C8A878" stop-opacity="0"/>
-            </linearGradient>
-            <linearGradient id="sl" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#D4B888" stop-opacity="0"/><stop offset="10%" stop-color="#986840" stop-opacity="0.42"/><stop offset="40%" stop-color="#C8A870" stop-opacity="0.25"/><stop offset="56%" stop-color="#E8D4A8" stop-opacity="0.12"/><stop offset="82%" stop-color="#C8A870" stop-opacity="0.25"/><stop offset="90%" stop-color="#986840" stop-opacity="0.42"/><stop offset="100%" stop-color="#D4B888" stop-opacity="0"/>
-            </linearGradient>
-            <linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#C8A878" stop-opacity="0"/><stop offset="12%" stop-color="#7A5030" stop-opacity="0.68"/><stop offset="42%" stop-color="#A87848" stop-opacity="0.45"/><stop offset="58%" stop-color="#D4B080" stop-opacity="0.22"/><stop offset="82%" stop-color="#7A5030" stop-opacity="0.68"/><stop offset="100%" stop-color="#C8A878" stop-opacity="0"/>
-            </linearGradient>
+            <linearGradient id="sd" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#C8A878" stop-opacity="0"/><stop offset="6%" stop-color="#7A5030" stop-opacity="0.72"/><stop offset="28%" stop-color="#A07848" stop-opacity="0.6"/><stop offset="50%" stop-color="#D4B888" stop-opacity="0.28"/><stop offset="72%" stop-color="#A07848" stop-opacity="0.6"/><stop offset="94%" stop-color="#7A5030" stop-opacity="0.72"/><stop offset="100%" stop-color="#C8A878" stop-opacity="0"/></linearGradient>
+            <linearGradient id="sm" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#C8A878" stop-opacity="0"/><stop offset="8%" stop-color="#8A6038" stop-opacity="0.55"/><stop offset="35%" stop-color="#B89060" stop-opacity="0.38"/><stop offset="52%" stop-color="#E0C898" stop-opacity="0.18"/><stop offset="74%" stop-color="#B89060" stop-opacity="0.38"/><stop offset="92%" stop-color="#8A6038" stop-opacity="0.55"/><stop offset="100%" stop-color="#C8A878" stop-opacity="0"/></linearGradient>
+            <linearGradient id="sl" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#D4B888" stop-opacity="0"/><stop offset="10%" stop-color="#986840" stop-opacity="0.42"/><stop offset="40%" stop-color="#C8A870" stop-opacity="0.25"/><stop offset="56%" stop-color="#E8D4A8" stop-opacity="0.12"/><stop offset="82%" stop-color="#C8A870" stop-opacity="0.25"/><stop offset="90%" stop-color="#986840" stop-opacity="0.42"/><stop offset="100%" stop-color="#D4B888" stop-opacity="0"/></linearGradient>
+            <linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#C8A878" stop-opacity="0"/><stop offset="12%" stop-color="#7A5030" stop-opacity="0.68"/><stop offset="42%" stop-color="#A87848" stop-opacity="0.45"/><stop offset="58%" stop-color="#D4B080" stop-opacity="0.22"/><stop offset="82%" stop-color="#7A5030" stop-opacity="0.68"/><stop offset="100%" stop-color="#C8A878" stop-opacity="0"/></linearGradient>
           </defs>
           <rect x="306" y="78" width="68" height="22" rx="11" fill="rgba(90,55,20,0.6)"/>
           <rect x="274" y="99" width="132" height="14" rx="6" fill="url(#ng)" opacity="0.9"/>
@@ -569,6 +578,14 @@
         <div class="insight-text"><b>Trending in your palate:</b> You rate Nebbiolo-based wines 23% higher than your average. Worth exploring Barolo next time.</div>
       </div>
 
+      <div class="scan-card" onclick="go('s-profile')" style="margin-bottom:24px">
+        <div>
+          <div class="scan-card-label">Taste profile</div>
+          <div class="scan-card-title">Set up or refine<br>your palate.</div>
+        </div>
+        <div class="scan-card-arrow">→</div>
+      </div>
+
       <div class="sec-row">
         <div class="label">Recent</div>
         <button class="sec-link" onclick="go('s-cellar')">All →</button>
@@ -612,7 +629,7 @@
       <button class="nav-btn on" onclick="go('s-home')"><span class="nav-icon">⌂</span>Home</button>
       <button class="nav-btn" onclick="go('s-scan')"><span class="nav-icon">◎</span>Scan</button>
       <button class="nav-btn" onclick="go('s-cellar')"><span class="nav-icon">▣</span>Cellar</button>
-      <button class="nav-btn" onclick="toast('Profile settings coming soon')"><span class="nav-icon">◈</span>Profile</button>
+      <button class="nav-btn" onclick="go('s-profile')"><span class="nav-icon">◈</span>Profile</button>
     </div>
   </div>
 
@@ -653,7 +670,7 @@
       <button class="nav-btn" onclick="go('s-home')"><span class="nav-icon">⌂</span>Home</button>
       <button class="nav-btn on" onclick="go('s-scan')"><span class="nav-icon">◎</span>Scan</button>
       <button class="nav-btn" onclick="go('s-cellar')"><span class="nav-icon">▣</span>Cellar</button>
-      <button class="nav-btn" onclick="toast('Profile settings coming soon')"><span class="nav-icon">◈</span>Profile</button>
+      <button class="nav-btn" onclick="go('s-profile')"><span class="nav-icon">◈</span>Profile</button>
     </div>
   </div>
 
@@ -678,7 +695,7 @@
       <button class="nav-btn" onclick="go('s-home')"><span class="nav-icon">⌂</span>Home</button>
       <button class="nav-btn on" onclick="go('s-scan')"><span class="nav-icon">◎</span>Scan</button>
       <button class="nav-btn" onclick="go('s-cellar')"><span class="nav-icon">▣</span>Cellar</button>
-      <button class="nav-btn" onclick="toast('Profile coming soon')"><span class="nav-icon">◈</span>Profile</button>
+      <button class="nav-btn" onclick="go('s-profile')"><span class="nav-icon">◈</span>Profile</button>
     </div>
   </div>
 
@@ -695,6 +712,14 @@
         <div class="c-stat"><div class="c-stat-val">8.4</div><div class="c-stat-label">Avg score</div></div>
         <div class="c-stat"><div class="c-stat-val">12</div><div class="c-stat-label">Saved</div></div>
       </div>
+      <div class="scan-card" onclick="go('s-profile')" style="margin:0 20px 24px">
+        <div>
+          <div class="scan-card-label">Taste profile</div>
+          <div class="scan-card-title">Refine your palate.</div>
+        </div>
+        <div class="scan-card-arrow">→</div>
+      </div>
+
       <div class="taste-dna">
         <div class="label">Taste DNA</div>
         <div class="dna-bar"><div class="dna-bar-label">Pinot Noir</div><div class="dna-bar-track"><div class="dna-bar-fill" style="width:88%"></div></div><div class="dna-bar-val">88%</div></div>
@@ -715,7 +740,7 @@
       <button class="nav-btn" onclick="go('s-home')"><span class="nav-icon">⌂</span>Home</button>
       <button class="nav-btn" onclick="go('s-scan')"><span class="nav-icon">◎</span>Scan</button>
       <button class="nav-btn on" onclick="go('s-cellar')"><span class="nav-icon">▣</span>Cellar</button>
-      <button class="nav-btn" onclick="toast('Profile coming soon')"><span class="nav-icon">◈</span>Profile</button>
+      <button class="nav-btn" onclick="go('s-profile')"><span class="nav-icon">◈</span>Profile</button>
     </div>
   </div>
 
@@ -773,6 +798,135 @@
     </div>
   </div>
 
+  <!-- ═══ PROFILE — step 1: category ═══ -->
+  <div class="screen" id="s-profile">
+    <div class="sb"><span>9:41</span><div class="sb-icons"><span>●●●</span><span>▲</span><span>■</span></div></div>
+    <div class="taste-head">
+      <button class="back" onclick="goBack()" style="margin-bottom:12px">← Back</button>
+      <div class="label" style="margin-bottom:6px">Taste profile</div>
+      <div class="h1">Which category<br>would you like<br>to set up?</div>
+    </div>
+    <div class="scroll">
+      <div style="padding:0 20px;font-size:12px;color:var(--mid);margin-bottom:16px">You can always come back to do the others.</div>
+      <div class="prof-cat" onclick="selectProfCat(this,'red')" id="pc-red" data-selected="true">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:8px;height:8px;border-radius:50%;background:#8B1A2E;flex-shrink:0"></div>
+          <div style="font-size:14px;color:var(--ink)">Red wine</div>
+        </div>
+        <div class="prof-cat-status" id="ps-red">Not set up</div>
+      </div>
+      <div class="prof-cat" onclick="selectProfCat(this,'white')" id="pc-white">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:8px;height:8px;border-radius:50%;background:#C4A84A;border:1px solid var(--faint2);flex-shrink:0"></div>
+          <div style="font-size:14px;color:var(--ink)">White wine</div>
+        </div>
+        <div class="prof-cat-status" id="ps-white">Not set up</div>
+      </div>
+      <div class="prof-cat" onclick="selectProfCat(this,'rose')" id="pc-rose">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:8px;height:8px;border-radius:50%;background:#D4899A;flex-shrink:0"></div>
+          <div style="font-size:14px;color:var(--ink)">Rosé</div>
+        </div>
+        <div class="prof-cat-status" id="ps-rose">Not set up</div>
+      </div>
+      <div class="prof-cat" onclick="selectProfCat(this,'sparkling')" id="pc-sparkling">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--faint);border:1px solid var(--faint2);flex-shrink:0"></div>
+          <div style="font-size:14px;color:var(--ink)">Sparkling</div>
+        </div>
+        <div class="prof-cat-status" id="ps-sparkling">Not set up</div>
+      </div>
+    </div>
+    <div class="taste-foot">
+      <button class="btn ghost sm" onclick="goBack()">Cancel</button>
+      <button class="btn" id="prof-start-btn" onclick="startProfSetup()">Set up Red →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PROFILE — step 2: descriptors ═══ -->
+  <div class="screen" id="s-prof2">
+    <div class="sb"><span>9:41</span><div class="sb-icons"><span>●●●</span><span>▲</span><span>■</span></div></div>
+    <div class="taste-head">
+      <div class="label" id="p2-label" style="margin-bottom:6px">Step 2 of 4 — Red wine</div>
+      <div class="h1" id="p2-title">How do you like<br>your red?</div>
+    </div>
+    <div class="scroll">
+      <div style="padding:4px 20px 16px;font-size:12px;color:var(--mid)">Pick everything that sounds like you.</div>
+      <div id="p2-cards" style="padding:0 20px"></div>
+    </div>
+    <div class="taste-foot">
+      <button class="btn ghost sm" onclick="go('s-profile')">← Back</button>
+      <button class="btn" onclick="go('s-prof3')">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PROFILE — step 3: grapes ═══ -->
+  <div class="screen" id="s-prof3">
+    <div class="sb"><span>9:41</span><div class="sb-icons"><span>●●●</span><span>▲</span><span>■</span></div></div>
+    <div class="taste-head">
+      <div class="label" id="p3-label" style="margin-bottom:6px">Step 3 of 4 — Red wine</div>
+      <div class="h1">Any grapes you<br>know you like?</div>
+    </div>
+    <div class="scroll">
+      <div style="padding:4px 20px 16px;font-size:12px;color:var(--mid)">Skip if you're not sure — that's fine.</div>
+      <div class="chips-wrap" id="p3-grapes" style="padding:0 20px"></div>
+    </div>
+    <div class="taste-foot">
+      <button class="btn ghost sm" onclick="go('s-prof2')">← Back</button>
+      <button class="btn ghost sm" onclick="go('s-prof4')" style="margin-right:auto">Skip</button>
+      <button class="btn" onclick="go('s-prof4')">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PROFILE — step 4: bottles ═══ -->
+  <div class="screen" id="s-prof4">
+    <div class="sb"><span>9:41</span><div class="sb-icons"><span>●●●</span><span>▲</span><span>■</span></div></div>
+    <div class="taste-head">
+      <div class="label" id="p4-label" style="margin-bottom:6px">Step 4 of 4 — Red wine</div>
+      <div class="h1">Any bottles you've<br>really enjoyed?</div>
+    </div>
+    <div class="scroll">
+      <div style="padding:4px 20px 16px;font-size:12px;color:var(--mid)">As vague as you like — "a red Burgundy in Paris" works too.</div>
+      <div style="padding:0 20px">
+        <div style="background:var(--white);border:1px solid var(--faint);border-radius:3px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:11px;color:var(--faint2);width:14px;flex-shrink:0">1</span>
+          <input id="pb1" style="font-size:13px;color:var(--ink);flex:1;border:none;background:none;outline:none;font-family:var(--font)" placeholder="Wine name, producer, region...">
+        </div>
+        <div style="background:var(--white);border:1px solid var(--faint);border-radius:3px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:11px;color:var(--faint2);width:14px;flex-shrink:0">2</span>
+          <input id="pb2" style="font-size:13px;color:var(--ink);flex:1;border:none;background:none;outline:none;font-family:var(--font)" placeholder="Optional">
+        </div>
+        <div style="background:var(--white);border:1px solid var(--faint);border-radius:3px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:11px;color:var(--faint2);width:14px;flex-shrink:0">3</span>
+          <input id="pb3" style="font-size:13px;color:var(--ink);flex:1;border:none;background:none;outline:none;font-family:var(--font)" placeholder="Optional">
+        </div>
+      </div>
+    </div>
+    <div class="taste-foot">
+      <button class="btn ghost sm" onclick="go('s-prof3')">← Back</button>
+      <button class="btn ghost sm" onclick="finishProfSetup()" style="margin-right:auto">Skip</button>
+      <button class="btn" onclick="finishProfSetup()">Build my profile →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PROFILE — step 5: fingerprint ═══ -->
+  <div class="screen" id="s-prof5">
+    <div class="sb"><span>9:41</span><div class="sb-icons"><span>●●●</span><span>▲</span><span>■</span></div></div>
+    <div class="taste-head">
+      <div class="label" id="p5-label" style="margin-bottom:6px">Red wine — done</div>
+      <div class="h1">Your taste<br>fingerprint.</div>
+    </div>
+    <div class="scroll">
+      <div style="padding:4px 20px 14px;font-size:12px;color:var(--mid)">This sharpens as you rate more wines.</div>
+      <div style="margin:0 20px;background:var(--off);border-radius:3px;padding:16px" id="p5-bars"></div>
+      <div style="padding:14px 20px;font-size:12px;color:var(--mid);line-height:1.6">Set up another category, or start scanning wine lists.</div>
+    </div>
+    <div class="taste-foot">
+      <button class="btn ghost sm" onclick="go('s-profile')">Set up another</button>
+      <button class="btn" onclick="goBack()">Done →</button>
+    </div>
+  </div>
+
   <!-- Loading -->
   <div class="loading" id="loading">
     <div class="loading-ring"></div>
@@ -802,57 +956,161 @@ const RESULTS = [
   { rank:5, name:"Rioja Gran Reserva", producer:"López de Heredia", year:"2010", region:"Rioja, ES", type:"red", score:79, price:"€45", tags:["Tempranillo","Old World","Value"], matchTags:[], reason:"Strong value pick. <b>Mature, savoury, complex</b> at a fair price — a sensible choice if the Burgs feel steep." },
 ];
 
-// ── Config ─────────────────────────────────────────────────
-// In production this points to your Railway/Render URL.
-// During local dev, run the backend on :3000 and this file on the same server.
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:3000'
-  : ''; // same origin when deployed
-
-// ── State ──────────────────────────────────────────────────
 let prev = 's-home', cur = 's-splash', saved = new Set();
 let uploadedImageB64 = null, uploadedMediaType = null;
 
-// ── Persistence ────────────────────────────────────────────
-function saveProfile() {
-  const grapes = [...document.querySelectorAll('.chips-wrap .chip.on')].map(c => c.textContent.trim());
-  const sliders = [...document.querySelectorAll('input[type=range]')].map(s => parseInt(s.value));
-  localStorage.setItem('stem_profile', JSON.stringify({ grapes, sliders }));
+// ── Profile screen ─────────────────────────────────────────
+const PROF_DESCS = {
+  red: [
+    { n:'Dry, not sweet at all', s:"I don't want to taste sugar" },
+    { n:'A bit of a bite to it', s:'That drying feeling in your mouth' },
+    { n:'Smooth and easy to drink', s:'No harsh edges' },
+    { n:'Light and delicate', s:'Subtle, not overpowering' },
+    { n:'Rich and fills your mouth', s:'Big, warming, full' },
+    { n:'Tastes like food, not fruit', s:'Savoury, goes well with a meal' },
+  ],
+  white: [
+    { n:'Crisp and refreshing', s:'Clean, makes your mouth water' },
+    { n:'Rich and creamy', s:'Full, almost buttery' },
+    { n:'Bone dry', s:'No sweetness whatsoever' },
+    { n:'A little sweetness', s:'Gentle fruit, soft finish' },
+    { n:'Light as water', s:'Delicate, easy, low alcohol feel' },
+    { n:'Goes well with food', s:'Cuts through rich dishes' },
+  ],
+  rose: [
+    { n:'Very dry', s:'Provence-style, no sweetness' },
+    { n:'Fruity and fresh', s:'Berry notes, easy drinking' },
+    { n:'Pale and delicate', s:'Almost white wine lightness' },
+    { n:'A bit of body to it', s:'Not too light, satisfying' },
+  ],
+  sparkling: [
+    { n:'Very dry and toasty', s:'Champagne-style' },
+    { n:'Fresh and fruity', s:'Light bubbles, easy' },
+    { n:'Fine persistent bubbles', s:'Elegant, not aggressive' },
+    { n:'A little sweetness', s:'Prosecco-style softness' },
+  ],
+};
+const PROF_GRAPES = {
+  red: ['Pinot Noir','Cabernet Sauvignon','Nebbiolo','Merlot','Syrah','Sangiovese','Tempranillo','Malbec','Grenache','Barbera','Gamay','Zinfandel'],
+  white: ['Chardonnay','Riesling','Sauvignon Blanc','Pinot Grigio','Viognier','Chenin Blanc','Grüner Veltliner','Albariño','Vermentino','Muscat'],
+  rose: ['Grenache','Cinsault','Mourvèdre','Pinot Noir','Sangiovese'],
+  sparkling: ['Chardonnay','Pinot Noir','Pinot Meunier','Glera','Macabeu'],
+};
+const PROF_CAT_NAMES = { red:'Red wine', white:'White wine', rose:'Rosé', sparkling:'Sparkling' };
+const PROF_CAT_SHORT = { red:'red', white:'white', rose:'rosé', sparkling:'sparkling' };
+let profCurrentCat = 'red';
+let profData = {};
+
+function selectProfCat(el, cat) {
+  document.querySelectorAll('.prof-cat').forEach(c => c.removeAttribute('data-selected'));
+  el.setAttribute('data-selected','true');
+  profCurrentCat = cat;
+  document.getElementById('prof-start-btn').textContent = 'Set up ' + PROF_CAT_NAMES[cat] + ' →';
 }
 
-function loadProfile() {
+function startProfSetup() {
+  const name = PROF_CAT_NAMES[profCurrentCat];
+  const short = PROF_CAT_SHORT[profCurrentCat];
+  document.getElementById('p2-label').textContent = 'Step 2 of 4 — ' + name;
+  document.getElementById('p2-title').innerHTML = 'How do you like<br>your ' + short + '?';
+  document.getElementById('p3-label').textContent = 'Step 3 of 4 — ' + name;
+  document.getElementById('p4-label').textContent = 'Step 4 of 4 — ' + name;
+  document.getElementById('p5-label').textContent = name + ' — done';
+  document.getElementById('p2-cards').innerHTML = PROF_DESCS[profCurrentCat].map(d =>
+    `<div class="prof-desc-card" onclick="this.classList.toggle('on')">
+      <div class="pdc-n">${d.n}</div><div class="pdc-s">${d.s}</div>
+    </div>`
+  ).join('');
+  document.getElementById('p3-grapes').innerHTML = PROF_GRAPES[profCurrentCat].map(g =>
+    `<button class="chip" onclick="this.classList.toggle('on')">${g}</button>`
+  ).join('');
+  ['pb1','pb2','pb3'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  go('s-prof2');
+}
+
+function finishProfSetup() {
+  const descs  = [...document.querySelectorAll('#p2-cards .prof-desc-card.on')].map(d => d.querySelector('.pdc-n').textContent);
+  const grapes = [...document.querySelectorAll('#p3-grapes .chip.on')].map(g => g.textContent);
+  const bottles = ['pb1','pb2','pb3'].map(id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; }).filter(Boolean);
+  profData[profCurrentCat] = { descs, grapes, bottles };
+  const st = document.getElementById('ps-' + profCurrentCat);
+  if (st) { st.textContent = 'Done ✓'; st.classList.add('done'); }
+  saveProfData();
+  buildProfFingerprint(descs, grapes);
+  go('s-prof5');
+}
+
+function buildProfFingerprint(descs, grapes) {
+  const all = [...descs, ...grapes];
+  const traits = [
+    { n:'Dry, not sweet',      keys:['Dry','dry','not sweet','bone dry','Very dry'] },
+    { n:'Structured & grippy', keys:['bite','drying','Nebbiolo','Cabernet','Syrah','Sangiovese','Tempranillo','Barbera','Mourvèdre'] },
+    { n:'Light & delicate',    keys:['Light','delicate','Subtle','Gamay','Pinot Noir','Pinot Grigio','pale','Cinsault'] },
+    { n:'Old World character', keys:['food','savoury','Pinot Noir','Nebbiolo','Sangiovese','Gamay','Riesling','Chenin','Grüner','Albariño'] },
+    { n:'Smooth & easy',       keys:['Smooth','easy','No harsh','Merlot','Malbec','Grenache','Glera','fruity','fresh'] },
+    { n:'Rich & full-bodied',  keys:['Rich','fills','Creamy','buttery','Chardonnay','Zinfandel','Viognier','body'] },
+  ];
+  traits.forEach(t => {
+    t.w = 8 + Math.floor(Math.random() * 8);
+    all.forEach(a => { if (t.keys.some(k => a.includes(k))) t.w += 30; });
+    t.w = Math.min(95, t.w);
+  });
+  traits.sort((a,b) => b.w - a.w);
+  document.getElementById('p5-bars').innerHTML = traits.map(t => {
+    const conf = t.w > 68 ? `<span class="prof-fp-conf strong">Strong</span>`
+               : t.w > 38 ? `<span class="prof-fp-conf">Emerging</span>`
+               : `<span class="prof-fp-conf" style="color:var(--faint2)">Weak</span>`;
+    return `<div class="prof-fp-row">
+      <div class="prof-fp-name">${t.n}</div>
+      <div class="prof-fp-track"><div class="prof-fp-fill" style="width:${t.w}%"></div></div>
+      ${conf}
+    </div>`;
+  }).join('');
+}
+
+function saveProfData() {
+  try {
+    const allGrapes = [], allDescs = [], allBottles = [];
+    Object.values(profData).forEach(p => {
+      allGrapes.push(...(p.grapes || []));
+      allDescs.push(...(p.descs || []));
+      allBottles.push(...(p.bottles || []));
+    });
+    const existing = JSON.parse(localStorage.getItem('stem_profile') || '{}');
+    existing.grapes = [...new Set(allGrapes)];
+    existing.descs = [...new Set(allDescs)];
+    existing.bottles = [...new Set(allBottles)];
+    existing.categories = profData;
+    localStorage.setItem('stem_profile', JSON.stringify(existing));
+  } catch(e) { console.error(e); }
+}
+
+function loadProfData() {
   try {
     const p = JSON.parse(localStorage.getItem('stem_profile'));
-    if (!p) return;
-    // Restore chips
-    document.querySelectorAll('.chips-wrap .chip').forEach(chip => {
-      chip.classList.toggle('on', p.grapes.includes(chip.textContent.trim()));
+    if (!p || !p.categories) return;
+    profData = p.categories;
+    Object.keys(profData).forEach(cat => {
+      const st = document.getElementById('ps-' + cat);
+      if (st) { st.textContent = 'Done ✓'; st.classList.add('done'); }
     });
-    // Restore sliders
-    document.querySelectorAll('input[type=range]').forEach((s, i) => {
-      if (p.sliders[i] != null) s.value = p.sliders[i];
-    });
-  } catch {}
+  } catch(e) {}
 }
 
+// ── Taste profile for analysis ──────────────────────────────
 function getTasteProfile() {
-  const grapes = [...document.querySelectorAll('.chips-wrap .chip.on')].map(c => c.textContent.trim());
-  const sliders = [...document.querySelectorAll('input[type=range]')].map(s => parseInt(s.value));
-  return { grapes, body: sliders[1] ?? 55, sweetness: sliders[0] ?? 65, tannin: sliders[2] ?? 70 };
-}
-
-function saveCellar() {
-  localStorage.setItem('stem_saved', JSON.stringify([...saved]));
-}
-
-function loadCellar() {
   try {
-    const s = JSON.parse(localStorage.getItem('stem_saved'));
-    if (Array.isArray(s)) saved = new Set(s);
-  } catch {}
+    const p = JSON.parse(localStorage.getItem('stem_profile'));
+    if (p) return {
+      grapes: p.grapes || [],
+      descs: p.descs || [],
+      bottles: p.bottles || [],
+      body: 55, sweetness: 65, tannin: 70,
+    };
+  } catch(e) {}
+  return { grapes:[], descs:[], bottles:[], body:55, sweetness:65, tannin:70 };
 }
 
-// ── Navigation ─────────────────────────────────────────────
 function go(id) {
   const c = document.querySelector('.screen.active');
   if (c) { prev = c.id; c.classList.remove('active'); c.classList.add('out'); setTimeout(() => c.classList.remove('out'), 300); }
@@ -860,11 +1118,11 @@ function go(id) {
   if (n) { n.classList.add('active'); cur = id; }
 }
 function goBack() { go(prev); }
-function goHome() { saveProfile(); renderResults(RESULTS); go('s-home'); toast('Taste profile saved'); }
+function goHome() { loadProfData();
+renderResults(RESULTS); go('s-home'); }
 function toggleChip(el) { el.classList.toggle('on'); }
 function triggerPicker() { document.getElementById('file-in').click(); }
 
-// ── Upload ─────────────────────────────────────────────────
 function handleUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -872,6 +1130,7 @@ function handleUpload(e) {
   const reader = new FileReader();
   reader.onload = ev => {
     uploadedImageB64 = ev.target.result.split(',')[1];
+    // Show the uploaded image in the viewfinder
     const preview = document.getElementById('vf-preview');
     preview.innerHTML = `<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:3px;">`;
     document.getElementById('vf-hint').style.display = 'none';
@@ -882,50 +1141,91 @@ function handleUpload(e) {
   reader.readAsDataURL(file);
 }
 
-// ── Analysis — calls our backend proxy ─────────────────────
 async function startAnalysis() {
   const L = document.getElementById('loading');
   L.classList.add('on');
   ['ls1','ls2','ls3','ls4'].forEach(id => document.getElementById(id).classList.remove('done'));
 
+  // Step indicators timed to API call progress
   document.getElementById('ls1').classList.add('done');
-  await delay(500);
+  await delay(600);
   document.getElementById('ls2').classList.add('done');
 
   try {
     const profile = getTasteProfile();
+    const profileStr = `Favourite grapes/regions: ${profile.grapes.join(', ')}. Body preference (0=light, 100=full): ${profile.body}. Sweetness (0=dry, 100=sweet): ${profile.sweetness}. Tannin (0=low, 100=grippy): ${profile.tannin}.`;
 
-    const response = await fetch(`${API_BASE}/api/analyse`, {
+    const prompt = `You are Stem, a personal wine intelligence assistant. The user has uploaded a photo of a restaurant wine list.
+
+User's taste profile: ${profileStr}
+
+Your tasks:
+1. Read all wines visible on the wine list in the image.
+2. Rank them by how well they match the user's taste profile.
+3. Return ONLY a JSON array (no markdown, no explanation, no backticks) of up to 6 wines in this exact format:
+
+[
+  {
+    "rank": 1,
+    "name": "Wine name",
+    "producer": "Producer name",
+    "year": "2019",
+    "region": "Region, Country",
+    "type": "red",
+    "score": 94,
+    "price": "€85",
+    "tags": ["Pinot Noir", "Earthy", "Old World"],
+    "matchTags": ["Pinot Noir"],
+    "reason": "Short 1-2 sentence reason why this matches their profile. Use <b>bold</b> for key phrases."
+  }
+]
+
+Rules:
+- type must be one of: "red", "white", "rosé", "sparkling"
+- score is 0-100 match percentage based on taste profile
+- matchTags are tags that directly relate to the user's stated preferences
+- price: use the price from the menu if visible, otherwise omit the field
+- If you cannot read the wine list clearly, return your best attempt based on what is visible
+- Return ONLY the JSON array, nothing else`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        imageBase64: uploadedImageB64,
-        mediaType: uploadedMediaType,
-        tasteProfile: profile,
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: uploadedMediaType, data: uploadedImageB64 } },
+            { type: 'text', text: prompt }
+          ]
+        }]
       })
     });
 
     document.getElementById('ls3').classList.add('done');
 
     const data = await response.json();
+    const raw = data.content.map(b => b.text || '').join('').trim();
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const results = JSON.parse(clean);
 
-    if (!response.ok) {
-      throw new Error(data.error || 'Server error');
-    }
+    // Normalise ranks
+    results.forEach((r, i) => { r.rank = i + 1; if (!r.price) r.price = '—'; });
 
-    const results = data.results;
     document.getElementById('ls4').classList.add('done');
-    await delay(300);
+    await delay(400);
 
     L.classList.remove('on');
     renderResults(results);
     document.getElementById('r-count').textContent = `${results.length} wines analysed`;
-    document.getElementById('r-meta').textContent = `Matched to: ${profile.grapes.slice(0,3).join(', ') || 'your profile'}`;
+    document.getElementById('r-meta').textContent = `Matched to your profile: ${profile.grapes.slice(0,3).join(', ')}`;
     go('s-results');
 
   } catch (err) {
     L.classList.remove('on');
-    toast(err.message || 'Could not analyse — try a clearer photo');
+    toast('Could not analyse list — try a clearer photo');
     console.error(err);
   }
 }
@@ -970,7 +1270,6 @@ function filterR(btn, type) {
 
 function saveWine(i) {
   if (saved.has(i)) { saved.delete(i); } else { saved.add(i); toast('Added to cellar'); }
-  saveCellar();
   const btn = document.getElementById('sv-'+i);
   btn.classList.toggle('saved', saved.has(i));
   btn.textContent = saved.has(i) ? 'Saved ✓' : 'Save';
@@ -991,9 +1290,7 @@ function toast(msg) {
   tTimer = setTimeout(() => el.classList.remove('on'), 2600);
 }
 
-// ── Init ───────────────────────────────────────────────────
-loadProfile();
-loadCellar();
+loadProfData();
 renderResults(RESULTS);
 </script>
 </body>

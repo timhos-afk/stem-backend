@@ -128,15 +128,14 @@
   #s-splash { background: var(--ink); }
   #s-splash .sb { color: rgba(255,255,255,0.5); }
   .splash-body { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 40px 28px 36px; position: relative; }
-  .splash-bottle { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: center; align-items: center; height: 52%; opacity: 0.12; pointer-events: none; }
+  .splash-bottle { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: center; align-items: center; height: 58%; opacity: 1; pointer-events: none; }
   .splash-bottle svg { height: 100%; }
-  .splash-wordmark { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 24px; position: relative; }
+  .splash-wordmark { font-size: 22px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 20px; position: relative; font-weight: 300; }
   .splash-h { font-size: 42px; font-weight: 300; letter-spacing: -0.04em; line-height: 1.05; color: #fff; margin-bottom: 20px; position: relative; }
   .splash-sub { font-size: 14px; font-weight: 300; line-height: 1.7; color: rgba(255,255,255,0.45); max-width: 300px; margin-bottom: 40px; position: relative; }
   .splash-actions { display: flex; flex-direction: column; gap: 10px; position: relative; }
-  .splash-actions .btn { background: #fff; color: var(--ink); }
-  .splash-actions .btn.ghost { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.6); background: transparent; }
-  .splash-actions .btn.ghost:hover { border-color: rgba(255,255,255,0.5); color: rgba(255,255,255,0.8); }
+  .splash-actions .btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.25); text-align: left; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .splash-actions .btn:hover { border-color: rgba(255,255,255,0.6); }
 
   /* ─────────────────────────────────────────
      TASTE SETUP
@@ -405,19 +404,84 @@
     <div class="sb"><span>9:41</span><div class="sb-icons" style="color:rgba(255,255,255,0.5)"><span>●●●</span><span>▲</span><span>■</span></div></div>
     <div class="splash-body">
       <div class="splash-bottle">
-        <svg viewBox="0 0 80 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M34 0h12v18c0 0 14 8 14 30v160c0 11-9 20-20 20s-20-9-20-20V48c0-22 14-30 14-30V0z" fill="white"/>
-          <rect x="30" y="0" width="20" height="6" rx="2" fill="white"/>
-          <rect x="28" y="55" width="24" height="1" fill="black" opacity="0.2"/>
-          <rect x="28" y="75" width="24" height="1" fill="black" opacity="0.2"/>
+        <svg viewBox="0 0 680 820" xmlns="http://www.w3.org/2000/svg" style="height:100%;width:auto">
+          <defs>
+            <linearGradient id="sd" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#C8A878" stop-opacity="0"/><stop offset="6%" stop-color="#7A5030" stop-opacity="0.72"/><stop offset="28%" stop-color="#A07848" stop-opacity="0.6"/><stop offset="50%" stop-color="#D4B888" stop-opacity="0.28"/><stop offset="72%" stop-color="#A07848" stop-opacity="0.6"/><stop offset="94%" stop-color="#7A5030" stop-opacity="0.72"/><stop offset="100%" stop-color="#C8A878" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="sm" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#C8A878" stop-opacity="0"/><stop offset="8%" stop-color="#8A6038" stop-opacity="0.55"/><stop offset="35%" stop-color="#B89060" stop-opacity="0.38"/><stop offset="52%" stop-color="#E0C898" stop-opacity="0.18"/><stop offset="74%" stop-color="#B89060" stop-opacity="0.38"/><stop offset="92%" stop-color="#8A6038" stop-opacity="0.55"/><stop offset="100%" stop-color="#C8A878" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="sl" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#D4B888" stop-opacity="0"/><stop offset="10%" stop-color="#986840" stop-opacity="0.42"/><stop offset="40%" stop-color="#C8A870" stop-opacity="0.25"/><stop offset="56%" stop-color="#E8D4A8" stop-opacity="0.12"/><stop offset="82%" stop-color="#C8A870" stop-opacity="0.25"/><stop offset="90%" stop-color="#986840" stop-opacity="0.42"/><stop offset="100%" stop-color="#D4B888" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#C8A878" stop-opacity="0"/><stop offset="12%" stop-color="#7A5030" stop-opacity="0.68"/><stop offset="42%" stop-color="#A87848" stop-opacity="0.45"/><stop offset="58%" stop-color="#D4B080" stop-opacity="0.22"/><stop offset="82%" stop-color="#7A5030" stop-opacity="0.68"/><stop offset="100%" stop-color="#C8A878" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <rect x="306" y="78" width="68" height="22" rx="11" fill="rgba(90,55,20,0.6)"/>
+          <rect x="274" y="99" width="132" height="14" rx="6" fill="url(#ng)" opacity="0.9"/>
+          <rect x="274" y="112" width="132" height="13" rx="6" fill="url(#ng)" opacity="0.85"/>
+          <rect x="274" y="124" width="132" height="14" rx="6" fill="url(#ng)" opacity="0.8"/>
+          <rect x="274" y="137" width="132" height="13" rx="6" fill="url(#ng)" opacity="0.78"/>
+          <rect x="274" y="149" width="132" height="14" rx="6" fill="url(#ng)" opacity="0.75"/>
+          <rect x="274" y="162" width="132" height="13" rx="6" fill="url(#ng)" opacity="0.7"/>
+          <rect x="274" y="174" width="132" height="13" rx="6" fill="url(#ng)" opacity="0.65"/>
+          <rect x="274" y="186" width="132" height="13" rx="6" fill="url(#ng)" opacity="0.6"/>
+          <rect x="248" y="198" width="184" height="13" rx="6" fill="url(#sd)" opacity="0.78"/>
+          <rect x="230" y="210" width="220" height="13" rx="6" fill="url(#sd)" opacity="0.74"/>
+          <rect x="214" y="222" width="252" height="14" rx="6" fill="url(#sd)" opacity="0.72"/>
+          <rect x="202" y="235" width="276" height="13" rx="6" fill="url(#sd)" opacity="0.70"/>
+          <rect x="194" y="247" width="292" height="13" rx="6" fill="url(#sd)" opacity="0.68"/>
+          <rect x="190" y="259" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.68"/>
+          <rect x="190" y="271" width="300" height="16" rx="7" fill="url(#sm)" opacity="0.72"/>
+          <rect x="190" y="283" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.65"/>
+          <rect x="190" y="295" width="300" height="16" rx="7" fill="url(#sl)" opacity="0.78"/>
+          <rect x="190" y="307" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.62"/>
+          <rect x="190" y="319" width="300" height="16" rx="7" fill="url(#sm)" opacity="0.68"/>
+          <rect x="190" y="331" width="300" height="16" rx="7" fill="url(#sl)" opacity="0.72"/>
+          <rect x="190" y="343" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.60"/>
+          <rect x="190" y="355" width="300" height="16" rx="7" fill="url(#sm)" opacity="0.66"/>
+          <rect x="190" y="367" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.62"/>
+          <rect x="190" y="379" width="300" height="16" rx="7" fill="url(#sl)" opacity="0.70"/>
+          <rect x="190" y="391" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.60"/>
+          <rect x="190" y="403" width="300" height="16" rx="7" fill="url(#sm)" opacity="0.64"/>
+          <rect x="190" y="415" width="300" height="16" rx="7" fill="url(#sl)" opacity="0.68"/>
+          <rect x="190" y="427" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.58"/>
+          <rect x="190" y="439" width="300" height="16" rx="7" fill="url(#sm)" opacity="0.62"/>
+          <rect x="190" y="451" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.60"/>
+          <rect x="190" y="463" width="300" height="16" rx="7" fill="url(#sl)" opacity="0.65"/>
+          <rect x="190" y="475" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.58"/>
+          <rect x="190" y="487" width="300" height="16" rx="7" fill="url(#sm)" opacity="0.60"/>
+          <rect x="190" y="499" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.56"/>
+          <rect x="190" y="511" width="300" height="16" rx="7" fill="url(#sl)" opacity="0.62"/>
+          <rect x="190" y="523" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.55"/>
+          <rect x="190" y="535" width="300" height="16" rx="7" fill="url(#sm)" opacity="0.58"/>
+          <rect x="190" y="547" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.54"/>
+          <rect x="190" y="559" width="300" height="16" rx="7" fill="url(#sl)" opacity="0.60"/>
+          <rect x="190" y="571" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.52"/>
+          <rect x="190" y="583" width="300" height="16" rx="7" fill="url(#sm)" opacity="0.56"/>
+          <rect x="190" y="595" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.52"/>
+          <rect x="190" y="607" width="300" height="16" rx="7" fill="url(#sl)" opacity="0.58"/>
+          <rect x="190" y="619" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.50"/>
+          <rect x="190" y="631" width="300" height="16" rx="7" fill="url(#sm)" opacity="0.54"/>
+          <rect x="190" y="643" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.50"/>
+          <rect x="190" y="655" width="300" height="16" rx="7" fill="url(#sl)" opacity="0.56"/>
+          <rect x="190" y="667" width="300" height="16" rx="7" fill="url(#sd)" opacity="0.48"/>
+          <rect x="194" y="679" width="292" height="14" rx="6" fill="url(#sd)" opacity="0.50"/>
+          <rect x="200" y="692" width="280" height="13" rx="6" fill="url(#sm)" opacity="0.46"/>
+          <rect x="210" y="704" width="260" height="13" rx="6" fill="url(#sd)" opacity="0.42"/>
+          <rect x="222" y="716" width="236" height="13" rx="6" fill="url(#sm)" opacity="0.38"/>
+          <rect x="238" y="728" width="204" height="12" rx="6" fill="url(#sd)" opacity="0.34"/>
+          <rect x="256" y="739" width="168" height="12" rx="6" fill="url(#sm)" opacity="0.28"/>
         </svg>
       </div>
       <div class="splash-wordmark">Stem</div>
       <div class="splash-h">Know your<br>wine. Always.</div>
       <p class="splash-sub">Photograph any wine list. Stem reads your palate and tells you exactly what to order — no guesswork, no bad advice.</p>
       <div class="splash-actions">
-        <button class="btn" onclick="go('s-taste')">Set up my taste profile</button>
-        <button class="btn ghost" onclick="goHome()">Explore the app first</button>
+        <button class="btn" onclick="go('s-scan')">Scan a wine list →</button>
+        <button class="btn" onclick="goHome()">My cellar →</button>
       </div>
     </div>
   </div>

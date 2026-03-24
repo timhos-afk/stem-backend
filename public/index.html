@@ -277,15 +277,15 @@
   @keyframes scan { 0%,100% { top: 15%; } 50% { top: 85%; } }
 
   .upload-row {
-    margin: 0 20px 16px;
-    border: 1px dashed var(--faint2); border-radius: 3px;
-    padding: 14px 16px;
-    display: flex; gap: 12px; align-items: center;
-    cursor: pointer; transition: border-color 0.15s;
+    border: 1px dashed rgba(255,255,255,0.2); border-radius: 3px;
+    padding: 14px 10px;
+    display: flex; gap: 8px; align-items: center; justify-content: center; flex-direction: column;
+    cursor: pointer; transition: border-color 0.15s; text-align: center;
   }
-  .upload-row:hover { border-color: var(--ink); }
-  .upload-row-text strong { display: block; font-size: 13px; font-weight: 500; margin-bottom: 1px; }
-  .upload-row-text span { font-size: 12px; color: var(--mid); }
+  .upload-row:hover { border-color: rgba(255,255,255,0.5); }
+  .upload-row:active { background: rgba(255,255,255,0.05); }
+  .upload-row-text strong { display: block; font-size: 12px; font-weight: 500; margin-bottom: 1px; color: rgba(255,255,255,0.8); }
+  .upload-row-text span { font-size: 11px; color: rgba(255,255,255,0.4); }
 
   .scan-tips-list { padding: 0 20px; }
   .scan-tip { display: flex; gap: 14px; padding: 12px 0; border-top: 1px solid var(--faint); }
@@ -642,7 +642,7 @@
       <div style="width:48px"></div>
     </div>
 
-    <div class="viewfinder" onclick="triggerPicker()" id="vf">
+    <div class="viewfinder" onclick="document.getElementById('file-camera').click()" id="vf">
       <div class="scan-line" id="scan-line"></div>
       <div class="vf-hint" id="vf-hint">
         <svg class="vf-hint-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="8" width="24" height="18" rx="2"/><path d="M11 8V6a5 5 0 0110 0v2"/><circle cx="16" cy="17" r="4"/></svg>
@@ -651,10 +651,17 @@
       <div class="vf-preview" id="vf-preview"></div>
     </div>
     <input type="file" id="file-in" accept="image/*" onchange="handleUpload(event)">
+    <input type="file" id="file-camera" accept="image/*" capture="environment" onchange="handleUpload(event)">
 
-    <div class="upload-row" onclick="triggerPicker()">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" style="flex-shrink:0;opacity:0.4"><path d="M8 10V2M5 5l3-3 3 3M3 12v1a1 1 0 001 1h8a1 1 0 001-1v-1"/></svg>
-      <div class="upload-row-text"><strong>Upload from camera roll</strong><span>Or take a photo directly</span></div>
+    <div style="display:flex;gap:10px;margin:0 20px 16px">
+      <div class="upload-row" onclick="document.getElementById('file-camera').click()" style="flex:1;margin:0;justify-content:center;flex-direction:column;align-items:center;gap:6px;padding:14px 10px;text-align:center">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2" style="opacity:0.5"><circle cx="10" cy="11" r="4"/><path d="M1 7h2l2-3h10l2 3h2v10H1V7z"/></svg>
+        <div class="upload-row-text"><strong>Take photo</strong></div>
+      </div>
+      <div class="upload-row" onclick="document.getElementById('file-in').click()" style="flex:1;margin:0;justify-content:center;flex-direction:column;align-items:center;gap:6px;padding:14px 10px;text-align:center">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2" style="opacity:0.5"><rect x="2" y="4" width="16" height="12" rx="2"/><path d="M6 4V2M14 4V2"/><path d="M2 9h16"/></svg>
+        <div class="upload-row-text"><strong>Camera roll</strong></div>
+      </div>
     </div>
 
     <div class="scan-tips-list">
@@ -1121,7 +1128,7 @@ function goBack() { go(prev); }
 function goHome() { loadProfData();
 renderResults(RESULTS); go('s-home'); }
 function toggleChip(el) { el.classList.toggle('on'); }
-function triggerPicker() { document.getElementById('file-in').click(); }
+function triggerPicker() { document.getElementById('file-camera').click(); }
 
 function handleUpload(e) {
   const file = e.target.files[0];
